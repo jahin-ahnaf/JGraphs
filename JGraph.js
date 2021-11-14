@@ -123,12 +123,11 @@ class JGraph {
             p.createCanvas(parentObj[index].width, parentObj[index].height) 
         }
         p.draw = function () {
-            p.background(parentObj[index].background) 
             
+            p.background(parentObj[index].background) 
             // calculate bar height using min and max of dataY
             let minY = Math.min(...parentObj[index].dataY)
             let maxY = Math.max(...parentObj[index].dataY)
-
             p.translate(p.width*0.05, p.height*0.95)
             p.scale(1,-0.9);
             if(parentObj[index].enableGrid){
@@ -223,7 +222,7 @@ class JGraph {
             p.translate(p.width / 2, p.height / 2)
             p.scale(1, -1)
             p.strokeWeight(0)
-
+            p.rotate(p.frameCount / 100)
             let lastAngle = 0;
             let maxY = Math.max(...parentObj[index].dataY)
             for(let i = 0 ; i < parentObj[index].dataY.length ; i++){
@@ -250,7 +249,6 @@ class JGraph {
         }
         p.draw = function () {
             p.background(parentObj[index].background) 
-            
             // calculate bar height using min and max of dataY
             let minY = Math.min(...parentObj[index].dataY)
             let maxY = Math.max(...parentObj[index].dataY)
