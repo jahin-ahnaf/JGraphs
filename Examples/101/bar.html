@@ -1,0 +1,51 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bar Graph Demo</title>
+
+    <link rel="stylesheet" href="bar.css">
+    <script src="../../Libraries/p5.js"></script>
+    <script src="../../JGraph.js"></script>
+
+</head>
+<body>
+
+
+    <div id="JGraph"></div>    
+    <div id="JGraph2"></div>    
+    <div id="JGraph3"></div>    
+
+</body>
+<script> 
+    bar = new JGraph('bar', 'JGraph',  ['Abey' , 'Bbey' , 'cbey' , 'Dbey' , 'heiko' , 'heil' , 'nikel' , 'cikra'] , [1000,2000,3000,4000 , 3200, 2300 , 2890 , 2300  ]);
+    bar.canvas_width = 900
+    bar.style = "light"
+    bar.plot()
+    bar2 = new JGraph('bar', 'JGraph' , ['MON' ,'WED', 'TUES' , 'THUR' , 'FRI', 'SAT' , 'SUN', 'MON'] , [43 , 30 , 10,20,30,40, 45 , 53])
+    bar2.style = "dark"
+    bar2.canvas_width = 900
+    bar2.plot()
+
+    pie = new JGraph('pie', 'JGraph2',  ['Abey' , 'Bbey' , 'cbey' , 'Dbey' , 'heiko' , 'heil' , 'nikel' , 'cikra'] , [1000,2000,3000,4000 , 3200, 2300 , 2890 , 2300  ]);
+    pie.canvas_width = 900
+    pie.style = "light"
+    pie.plot()
+    pie2 = new JGraph('pie', 'JGraph2',  ['Abey' , 'Bbey' , 'cbey' , 'Dbey' , 'heiko' , 'heil' , 'nikel' , 'cikra'] , [1000,2000,3000,4000 , 3200, 2300 , 2890 , 2300  ]);
+    pie2.canvas_width = 900
+    pie2.style = "dark"
+    pie2.plot()
+
+    lines = new JGraph('lines', 'JGraph3',  ['Abey' , 'Bbey' , 'cbey' , 'Dbey' , 'heiko' , 'heil' , 'nikel' , 'cikra'] , [1033,2444,3100,400 , 3200, 2300 , 2890 , 2300  ]);
+    lines.canvas_width = 900
+    lines.style = "light"
+    lines.plot()
+
+    lines2 = new JGraph('lines', 'JGraph3',  ['Abey' , 'Bbey' , 'cbey' , 'Dbey' , 'heiko' , 'heil' , 'nikel' , 'cikra'] , [1033,2444,3100,400 , 3200, 2300 , 2890 , 2300  ]);
+    lines2.canvas_width = 900
+    lines2.style = "dark"
+    lines2.plot()
+
+</script>
+</html>

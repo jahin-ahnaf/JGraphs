@@ -16,13 +16,14 @@ class JGraph {
         this.dataX = dataX
         this.dataY = dataY
 
-        this.backgroundColor = 0
+        this.backgroundColor = "#ffffff"
         this.canvas_width = 400
         this.canvas_height = 400
-        this.isVertical = true
-        this.fillColor = 255
-        this.labelColor = '#00fff0'
-        this.strokeColor = '#f0ff00'
+        this.fillColor = "#ffffaaaa"
+        this.labelColor = '#333388'
+        this.strokeColor = '#000000'
+        this.enableGrid = true
+        this.YTicks = true
 
         this.roundness = 0
         this.roundedCornerLeftTop = 0
@@ -31,12 +32,14 @@ class JGraph {
         this.roundedCornerRightBottom = 0
 
 
+
         parentObj[plotNumber] = this
         plotNumber++
     }
     plot() {
-
-        if (this.graphType = "bar") new p5(this.bargraph, this.divId)
+        if (this.graphType == "bar") new p5(this.bargraph, this.divId)
+        else if (this.graphType == "pie") new p5(this.piechart, this.divId)
+        else if (this.graphType == "lines") new p5(this.lineGraph, this.divId)
         else console.log("Graph type not supported")
     }
 
@@ -82,9 +85,33 @@ class JGraph {
     set roundedCornerRightBottom(roundness) { this.rightBottomRoundness = roundness }
     get roundedCornerRightBottom() { return this.rightBottomRoundness }
 
-    // set and get ifVertical
-    set ifVertical(isVertical) { this.isVertical = isVertical }
-    get ifVertical() { return this.isVertical }
+    // set and get enableGrid property
+    set grids (enableGrid){ this.enableGrid = enableGrid}
+    get grids (){ return this.enableGrid }
+
+    //enable and disable y ticks
+    set enableYTicks(YTicks){this.YTicks = YTicks}
+    get enableYTicks(){return this.YTicks}
+
+    set style(styleName){
+        if(styleName=="dark"){
+            this.background = "#161A25"
+            this.fillC = "#2962FF"
+            this.labelC = "#A3A6AF"
+            this.strokeC = "#ffffff"
+            this.roundedCornerLeftTop = 5
+            this.roundedCornerRightTop = 5
+        }else if(styleName == "light"){
+            this.background = "#fff"
+            this.fillC = "#92F2bb"
+            this.labelC = "#131722"
+            this.strokeC = "#000000"
+            this.roundedCornerLeftTop = 5
+            this.roundedCornerRightTop = 5
+        }else{
+
+        }
+    }
 
     // function for bar graph
     bargraph(p) {
@@ -98,17 +125,39 @@ class JGraph {
         p.draw = function () {
             p.background(parentObj[index].background) 
             
-                p.translate(p.width*0.05, p.height*0.95)
-                p.scale(1,-0.9);
-           
-           
-            p.fill(255)
-            
-            let barWidth = p.width / parentObj[index].dataX.length;
-
             // calculate bar height using min and max of dataY
             let minY = Math.min(...parentObj[index].dataY)
             let maxY = Math.max(...parentObj[index].dataY)
+
+            p.translate(p.width*0.05, p.height*0.95)
+            p.scale(1,-0.9);
+            if(parentObj[index].enableGrid){
+
+                p.stroke(parentObj[index].strokeC)
+                p.strokeWeight(0.3)
+                for(let i = 0 ; i < 10 ; i++){
+                    let x_loc = p.map(i , 0 , 10 , -10 , p.width*0.95)
+                    let y_loc = p.map(i , 0 , 10 , 0 , p.height);
+                    let yValue = p.map(i, 0, 10, 0, maxY)
+                    p.line(x_loc , 0 , x_loc , p.height)
+                    p.line(-10 , y_loc , p.width , y_loc)
+                    if(parentObj[index].enableYTicks){
+                        p.fill(parentObj[index].labelC)
+                        p.strokeWeight(0)
+                        p.push()
+                        p.translate(-40,y_loc)
+                        p.scale(1,-1)
+                        p.text( Math.round(yValue) , 0 , 0)
+                        p.pop()
+                        p.strokeWeight(0.3)
+                    }
+                }
+                p.strokeWeight(0)
+
+            }
+            let barWidth = p.width / parentObj[index].dataX.length;
+
+
            
             if(parentObj[index].roundedCornerLeftTop == 0) parentObj[index].roundedCornerLeftTop = parentObj[index].roundness;
             if(parentObj[index].roundedCornerLeftBottom == 0) parentObj[index].roundedCornerLeftBottom = parentObj[index].roundness;
@@ -118,9 +167,11 @@ class JGraph {
             for (let i = 0; i < parentObj[index].dataX.length; i++) {
 
                 let barHeight = p.map(parentObj[index].dataY[i], 0, maxY, 0, p.height)
+                
+                p.stroke(parentObj[index].strokeC)
 
                 p.fill(parentObj[index].fillC)
-                p.stroke(parentObj[index].strokeC)
+               
 
                 p.rect( i * barWidth , 0 , barWidth/2 , barHeight , parentObj[index].roundedCornerLeftBottom , parentObj[index].roundedCornerRightBottom , parentObj[index].roundedCornerRightTop , parentObj[index].roundedCornerLeftTop)
 
@@ -128,19 +179,159 @@ class JGraph {
                 p.noStroke()
                 p.push()
                 p.translate( i * barWidth + barWidth/4 - 15,  barHeight + 5)
-                
                 p.scale(1,-1)
-                p.text(parentObj[index].dataX[i], 0, 0)
 
+                p.textSize(16)
+
+                // x label on axis
+                p.text(parentObj[index].dataX[i] , 0, barHeight+18)
+
+                //y label on bar
+                p.text(parentObj[index].dataY[i], 0, 0)
+               
                 p.pop()
-                p.stroke(255)
+                p.stroke(0)
 
             }
-            p.strokeWeight(2)
+
+            p.strokeWeight(0.5)
+            p.stroke(parentObj[index].strokeC)
             p.line(-15, 0, p.width*0.9 , 0)
             p.line(-10, -5, -10 , p.height)
-            p.strokeWeight(1)
         }
     }
 
+    piechart(p) {
+        
+        let index = plottedPlotNumber;
+        plottedPlotNumber++;            
+        let total = 0;
+        let colors = []
+
+
+        p.setup = function () {
+            p.createCanvas(parentObj[index].width, parentObj[index].height)
+            for (let i = 0; i < parentObj[index].dataY.length; i++) {
+                var amountGreen = p.map(i, 0, parentObj[index].dataY.length, 0, 255)
+                total += parentObj[index].dataY[i]
+                colors.push([p.random(200), amountGreen, p.random(50)])
+        }
+        }            
+
+        p.draw = function () {
+            p.background(parentObj[index].background) 
+            p.translate(p.width / 2, p.height / 2)
+            p.scale(1, -1)
+            p.strokeWeight(0)
+
+            let lastAngle = 0;
+            let maxY = Math.max(...parentObj[index].dataY)
+            for(let i = 0 ; i < parentObj[index].dataY.length ; i++){
+                let angle = p.map(parentObj[index].dataY[i] , 0 , total , 0 , 2*p.PI)
+                p.fill(colors[i])
+                let displacement = p.map(parentObj[index].dataY[i] , 0 , maxY , -30 , 30)
+                p.arc( 0, 0, displacement + p.width / 3, displacement + p.width / 3, lastAngle, lastAngle + angle)
+                lastAngle += angle
+            }
+            p.fill(parentObj[index].backgroundColor)
+            p.circle(0, 0, p.width / 8)
+        }
+
+    }
+
+    // function for line graph
+    lineGraph(p) {
+
+        let index = plottedPlotNumber;
+        plottedPlotNumber++;
+
+        p.setup = function () {
+            p.createCanvas(parentObj[index].width, parentObj[index].height) 
+        }
+        p.draw = function () {
+            p.background(parentObj[index].background) 
+            
+            // calculate bar height using min and max of dataY
+            let minY = Math.min(...parentObj[index].dataY)
+            let maxY = Math.max(...parentObj[index].dataY)
+
+            p.translate(p.width*0.05, p.height*0.95)
+            p.scale(1,-0.9);
+            if(parentObj[index].enableGrid){
+
+                p.stroke(parentObj[index].strokeC)
+                p.strokeWeight(0.3)
+                for(let i = 0 ; i < 10 ; i++){
+                    let x_loc = p.map(i , 0 , 10 , -10 , p.width*0.95)
+                    let y_loc = p.map(i , 0 , 10 , 0 , p.height);
+                    let yValue = p.map(i, 0, 10, 0, maxY)
+                    p.line(x_loc , 0 , x_loc , p.height)
+                    p.line(-10 , y_loc , p.width , y_loc)
+                    if(parentObj[index].enableYTicks){
+                        p.fill(parentObj[index].labelC)
+                        p.strokeWeight(0)
+                        p.push()
+                        p.translate(-40,y_loc)
+                        p.scale(1,-1)
+                        p.text( Math.round(yValue) , 0 , 0)
+                        p.pop()
+                        p.strokeWeight(0.3)
+                    }
+                }
+                p.strokeWeight(0)
+
+            }
+            let barWidth = p.width / parentObj[index].dataX.length;
+
+
+            
+            if(parentObj[index].roundedCornerLeftTop == 0) parentObj[index].roundedCornerLeftTop = parentObj[index].roundness;
+            if(parentObj[index].roundedCornerLeftBottom == 0) parentObj[index].roundedCornerLeftBottom = parentObj[index].roundness;
+            if(parentObj[index].roundedCornerRightTop == 0) parentObj[index].roundedCornerRightTop = parentObj[index].roundness;
+            if(parentObj[index].roundedCornerRightBottom == 0) parentObj[index].roundedCornerRightBottom = parentObj[index].roundness;
+            
+            let prevBarHeight = parentObj[index].dataX[0] 
+            for (let i = 0; i < parentObj[index].dataX.length; i++) {
+                
+                let barHeight = p.map(parentObj[index].dataY[i], 0, maxY, 0, p.height)
+                
+                p.stroke(parentObj[index].strokeC)
+
+                p.strokeWeight(3)
+                p.stroke(parentObj[index].fillC)
+                
+                p.line( i * barWidth + barWidth/4 , barHeight , (i-1) * barWidth + barWidth/4 , prevBarHeight )
+                
+                prevBarHeight = barHeight;
+                p.fill(parentObj[index].labelC)
+                p.noStroke()
+                p.push()
+                p.translate( i * barWidth + barWidth/4 - 15,  barHeight + 5)
+                p.scale(1,-1)
+
+                p.textSize(16)
+
+                // x label on axis
+                p.text(parentObj[index].dataX[i] , 0, barHeight+18)
+
+                //y label on bar
+                p.text(parentObj[index].dataY[i], 0, 0)
+                
+                p.pop()
+                p.stroke(0)
+
+            }
+
+            p.strokeWeight(0.5)
+            p.stroke(parentObj[index].strokeC)
+            p.line(-15, 0, p.width*0.9 , 0)
+            p.line(-10, -5, -10 , p.height)
+        }
+    }
+}
+
+class JAudio{
+    constructor(audio){
+        this.audio = audio;
+    }
 }
